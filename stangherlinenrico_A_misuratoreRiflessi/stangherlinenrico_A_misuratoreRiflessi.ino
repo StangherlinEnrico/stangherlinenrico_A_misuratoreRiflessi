@@ -9,11 +9,13 @@ int pinBlue = 3; // Pin blue
 int pinGreen = 4; // Pin verde
 int pinRed = 5; // Pin rosso
 int attesaBlue = 0; // Variabile per salvare il tempo che la persona ha impiegato per premere il pulsante
+int promozioneBlue = 800;
 // END
 
 // VARIABILI CICALINO
 int pinCicalino = 6; // Pin del cicalino
 int attesaCic = 0; // Variabile per salvare il tempo che la persona ha impiegato per premere il pulsante
+int promozioneCic = 1100;
 // END
 
 // VARIABILI DISPLAY CLD
@@ -26,11 +28,41 @@ void allCompiler() // Funzione che contiene tutto il programma in poche righe
   riflessiLed(); // Esegue la funzione riflessiLed
   riflessiCic(); // Esegue la funzione riflessiCic
   delay(1300); // Aspetta 1300 millisecondi
-  if (attesaBlue <= 1000 and attesaCic <= 1200) // Verifica le condizioni per poter superare il test
+  if (attesaBlue <= promozioneBlue and attesaCic <= promozioneCic) // Verifica le condizioni per poter superare il test
     risultatiFinali(pinGreen); // Stampa le congratulazioni se l'esame è stato passato
   else // Altrimenti
     risultatiFinali(pinRed); // Stampa il fallimento se l'esame non è stato passato
   delay(50); // Aspetta 50 millisecondi
+}
+
+void criteriPromozione()
+{
+  String Codice = "";
+  Serial.print("Inserire la password per accedere. (Il codice è 1234)\n");
+  Serial.print("Si hanno 3 tentativi\n");
+  for (int i = 1; i < 4; i++)
+  {
+    Serial.print("Tentativo numero "); Serial.println(i);
+    while (Serial.available() == 0)
+    Codice = Serial.readString();
+    if (Codice != "1234")
+    {
+      Serial.print("Ritenta");
+      if (i == 3)
+      {
+        Serial.print("Accesso non consentito. Verrano usati i dati di base.\n");
+        Serial.print("Led: 800 millisec  ||  Cicalino: 1300 millisec");
+      }
+    }
+    else
+    {
+      Serial.print("Inserire tempo massimo per la promozione all'esame visivo. (millisecondi)\n");
+      promozioneBlue = Serial.readString().toInt();
+      Serial.print("Inserire tempo massimo per la promozione all'esame uditivo. (millisecondi)\n");
+      promozioneCic = Serial.readString().toInt();
+      break;
+    }
+  }
 }
 
 void generaRandom() // Funzione richiamata nel setup per creare la variabile randomTime
@@ -118,7 +150,8 @@ void setup() {
   pinMode(pinGreen, OUTPUT);
   pinMode(pinRed, OUTPUT);
   pinMode(pinCicalino, OUTPUT);
-  
+
+  criteriPromozione();
   generaRandom();
 }
 
