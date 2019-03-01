@@ -64,7 +64,46 @@ int sceltaFunzione()
 
 void startProgram()
 {
-  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("TL:");
+  lcd.setCursor(0, 1);
+  lcd.print("TC:");
+  delay(randomTime);
+  digitalWrite(pinRed, HIGH);
+  while(digitalRead(pinButtonOk) == LOW)
+  {
+    attesaLed++;
+    delay(1);
+    lcd.setCursor(4, 0);
+    lcd.print(attesaLed);
+  }
+  while(digitalRead(pinButtonOk) == HIGH);
+  digitalWrite(pinRed, LOW);
+  delay(randomTime);
+  while(digitalRead(pinButtonOk) == LOW)
+  {
+    attesaCic++;
+    tone(pinCicalino, NOTE_C6, 1);
+    lcd.setCursor(4, 1);
+    lcd.print(attesaCic);
+  }
+  while(digitalRead(pinButtonOk) == HIGH);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("L: "); lcd.print(attesaLed); lcd.print("|C: "); lcd.print(attesaCic);
+  lcd.setCursor(0, 1);
+  if (attesaLed < promozioneLed and attesaCic < promozioneCic)
+  {
+    lcd.print("Congratulazioni!");
+    delay(5000);
+  }
+  else
+  {
+    lcd.print("   FALLIMENTO");
+    delay(5000);
+  }
+  attesaLed = attesaCic = 0;
 }
 
 void modificaTmpRandom()
@@ -152,6 +191,7 @@ void modificaTmpRandom()
       while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonOk) == HIGH or digitalRead(pinButtonNext) == HIGH){}
     }
   }
+  randomTime = random(nMin, nMax);
 }
 
 bool verificaCodice()
@@ -337,17 +377,14 @@ void modificaCriteriPromozione()
     if (cic[0] == "0")
       cic.remove(0, 1);
 
+  promozioneLed = atol(blu.c_str());
+  promozioneCic = atol(cic.c_str());
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("  Data changed");
   lcd.setCursor(0, 1);
   lcd.print("   Ok to exit");
   while(digitalRead(pinButtonOk) == LOW){}
-  
-  // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA
-  // DARE AL MASSIMO 4 CIFRE PER I MILLISECONDI
-  // SE SI VUOLE FARE MILLISEC MA CON MENO DI 4 CIFRE METTERE 0 DAVANTI A TUTTO
-  // PROVARE A METTERE DEI NUMERI BASE --> Es. 0800 -- 1000
 }
 
 void setup() {
@@ -376,5 +413,6 @@ void loop() {
     if (codice)
       modificaCriteriPromozione();
   }
+  while(digitalRead(pinButtonOk) == HIGH){}
   setup();
 }
