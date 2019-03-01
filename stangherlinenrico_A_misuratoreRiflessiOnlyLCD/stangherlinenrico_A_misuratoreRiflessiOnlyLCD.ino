@@ -2,6 +2,7 @@
 #include <LiquidCrystal.h> // Libreria per utilizzare il Display LCD
 
 String opzioni[4] { "  Run Program", "   randomTime", "Promotion times", "                " };
+int tmpRandom[4] { 3000, 4000, 5000, 6000 };
 int esecuzione = 0;
 
 int pinButtonPrec = 9;
@@ -68,7 +69,97 @@ void startProgram()
 
 void modificaTmpRandom()
 {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("< TEMPO MINIMO >");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print(tmpRandom[0]);
+  int nMin = 0; int nMax = 0; int Pos = 0; int Pos2 = 0;
+  bool valenzaNumeri = true;
+  while(valenzaNumeri)
+  {
+    while(digitalRead(pinButtonPrec) == LOW and digitalRead(pinButtonOk) == LOW and digitalRead(pinButtonNext) == LOW){}
+    if (digitalRead(pinButtonPrec) == HIGH)
+    {
+      if (Pos == 0)
+        Pos = 2;
+      else
+        Pos--;
+      lcd.setCursor(0, 1);
+      lcd.print(opzioni[3]);
+      lcd.setCursor(0, 1);
+      lcd.print("      "); lcd.print(tmpRandom[Pos]);
+    }
+    else if (digitalRead(pinButtonNext) == HIGH)
+    {
+      if (Pos == 2)
+        Pos = 0;
+      else
+        Pos++;
+      lcd.setCursor(0, 1);
+      lcd.print(opzioni[3]);
+      lcd.setCursor(0, 1);
+      lcd.print("      "); lcd.print(tmpRandom[Pos]);
+    }
+    else
+    {
+      nMin = tmpRandom[Pos];
+      valenzaNumeri = false;
+    }
+    while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonOk) == HIGH or digitalRead(pinButtonNext) == HIGH){}
+  }
+  valenzaNumeri = true;
+  if (Pos == 2)
+    nMax = tmpRandom[3];
+  else
+  {
+    Pos2 = (Pos + 1);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("<NUMERO MASSIMO>");
+    lcd.setCursor(0, 1);
+    lcd.print("      "); lcd.print(tmpRandom[(Pos + 1)]);
+    while(valenzaNumeri)
+    {
+      while(digitalRead(pinButtonPrec) == LOW and digitalRead(pinButtonOk) == LOW and digitalRead(pinButtonNext) == LOW){}
+      if (digitalRead(pinButtonPrec) == HIGH)
+      {
+        if (Pos2 == (Pos + 1))
+          Pos2 = 3;
+        else
+          Pos2--;
+        lcd.setCursor(0, 1);
+        lcd.print(opzioni[3]);
+        lcd.setCursor(0, 1);
+        lcd.print("      "); lcd.print(tmpRandom[Pos2]);
+      }
+      else if (digitalRead(pinButtonNext) == HIGH)
+      {
+        if (Pos2 == 3)
+          Pos2 = (Pos + 1);
+        else
+          Pos2++;
+        lcd.setCursor(0, 1);
+        lcd.print(opzioni[3]);
+        lcd.setCursor(0, 1);
+        lcd.print("      "); lcd.print(tmpRandom[Pos2]);
+      }
+      else
+      {
+        nMax = tmpRandom[Pos2];
+        valenzaNumeri = false;
+      }
+      while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonOk) == HIGH or digitalRead(pinButtonNext) == HIGH){}
+    }
+  }
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print(nMin);
+  lcd.setCursor(0, 1);
+  lcd.print(nMax);
+  delay(3000);
   
+  randomTime = random(nMin, nMax);
 }
 
 bool verificaCodice()
@@ -82,7 +173,6 @@ void modificaCriteriPromozione()
 }
 
 void setup() {
-  Serial.begin(9600); // Inizializzo il monitor seriale
   lcd.begin(16, 2); // Inizializzo il display LCD
   // ASSEGNO GLI INPUT E GLI OUTPUT
   pinMode(pinButtonPrec, INPUT);
