@@ -210,11 +210,140 @@ bool verificaCodice()
     lcd.setCursor(0, 1);
     lcd.print("   Ok to exit");
     while(digitalRead(pinButtonOk) == LOW);
+    return false;
   }
 }
 
 void modificaCriteriPromozione()
 {
+  int num = 0; String blu = ""; String cic = "";
+  bool ciclo = true;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ledTimePromotion");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print("0800");
+
+  for (int i = 6; i < 10; i++)
+  {
+    if (i == 7)
+      num = 8;
+    else
+      num = 0;
+    while(ciclo)
+    {
+      while(digitalRead(pinButtonPrec) == LOW and digitalRead(pinButtonOk) == LOW and digitalRead(pinButtonNext) == LOW){}
+      if (digitalRead(pinButtonPrec) == HIGH)
+      {
+        if (num == 0)
+          num = 9;
+        else
+          num--;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (digitalRead(pinButtonNext) == HIGH)
+      {
+        if (num == 9)
+          num = 0;
+        else
+          num++;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else
+      {
+        if (i == 6)
+          blu = num;
+        else
+          blu += num;
+        ciclo = false;
+      }
+      while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonNext) == HIGH or digitalRead(pinButtonOk) == HIGH){}
+    }
+    ciclo = true;
+  }
+  if (blu == "0000")
+  {
+    lcd.clear();
+    lcd.setCursor(4, 0);
+    lcd.print("ERROR!");
+    lcd.setCursor(0, 1);
+    lcd.print(" ledProm <= 800");
+    delay(1200);
+  }
+  for (int i = 0; i < 4; i++)
+    if (blu[0] == "0")
+      blu.remove(0, 1);
+
+
+  num = 0;
+  ciclo = true;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ledCicaPromotion");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print("1100");
+
+  for (int i = 6; i < 10; i++)
+  {
+    if (i == 6 or i == 7)
+      num = 1;
+    else
+      num = 0;
+    while(ciclo)
+    {
+      while(digitalRead(pinButtonPrec) == LOW and digitalRead(pinButtonOk) == LOW and digitalRead(pinButtonNext) == LOW){}
+      if (digitalRead(pinButtonPrec) == HIGH)
+      {
+        if (num == 0)
+          num = 9;
+        else
+          num--;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (digitalRead(pinButtonNext) == HIGH)
+      {
+        if (num == 9)
+          num = 0;
+        else
+          num++;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else
+      {
+        if (i == 6)
+          cic = num;
+        else
+          cic += num;
+        ciclo = false;
+      }
+      while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonNext) == HIGH or digitalRead(pinButtonOk) == HIGH){}
+    }
+    ciclo = true;
+  }
+  if (cic == "0000")
+  {
+    lcd.clear();
+    lcd.setCursor(4, 0);
+    lcd.print("ERROR!");
+    lcd.setCursor(0, 1);
+    lcd.print(" cicProm < 1100");
+    delay(1200);
+  }
+  for (int i = 0; i < 4; i++)
+    if (cic[0] == "0")
+      cic.remove(0, 1);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("  Data changed");
+  lcd.setCursor(0, 1);
+  lcd.print("   Ok to exit");
+  while(digitalRead(pinButtonOk) == LOW){}
+  
   // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA
   // DARE AL MASSIMO 4 CIFRE PER I MILLISECONDI
   // SE SI VUOLE FARE MILLISEC MA CON MENO DI 4 CIFRE METTERE 0 DAVANTI A TUTTO
@@ -247,6 +376,5 @@ void loop() {
     if (codice)
       modificaCriteriPromozione();
   }
-  delay(3000);
   setup();
 }
