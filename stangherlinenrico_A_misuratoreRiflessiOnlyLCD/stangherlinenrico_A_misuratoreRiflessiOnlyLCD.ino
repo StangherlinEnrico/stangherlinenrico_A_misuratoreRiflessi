@@ -156,17 +156,66 @@ void modificaTmpRandom()
 
 bool verificaCodice()
 {
-  // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA E PROVARE A FAR LAMPEGGIARE IL NUMERO
-  // CODICE *1234*
-  // DOPO AVER INSERITO 4 CIFRE CHIUDE DA SOLO
-  // PREMERE 3 VOLTE DI FILA pinButtonOk PER USCIRE SENZA FARE NIENTE
-  // PROVARE A METTERE CODICE BASE --> 0000
-  return true;
+  int num = 0; String codice = "";
+  bool ciclo = true;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("SECRET CODE-1234");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print("0000");
+
+  for (int i = 6; i < 10; i++)
+  {
+    num = 0;
+    while(ciclo)
+    {
+      while(digitalRead(pinButtonPrec) == LOW and digitalRead(pinButtonOk) == LOW and digitalRead(pinButtonNext) == LOW){}
+      if (digitalRead(pinButtonPrec) == HIGH)
+      {
+        if (num == 0)
+          num = 9;
+        else
+          num--;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (digitalRead(pinButtonNext) == HIGH)
+      {
+        if (num == 9)
+          num = 0;
+        else
+          num++;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else
+      {
+        if (i == 6)
+          codice = num;
+        else
+          codice += num;
+        ciclo = false;
+      }
+      while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonNext) == HIGH or digitalRead(pinButtonOk) == HIGH){}
+    }
+    ciclo = true;
+  }
+  if (codice == "1234")
+    return true;
+  else
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(" CODICE ERRATO!");
+    lcd.setCursor(0, 1);
+    lcd.print("   Ok to exit");
+    while(digitalRead(pinButtonOk) == LOW);
+  }
 }
 
 void modificaCriteriPromozione()
 {
-  // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA E PROVARE A FAR LAMPEGGIARE IL NUMERO
+  // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA
   // DARE AL MASSIMO 4 CIFRE PER I MILLISECONDI
   // SE SI VUOLE FARE MILLISEC MA CON MENO DI 4 CIFRE METTERE 0 DAVANTI A TUTTO
   // PROVARE A METTERE DEI NUMERI BASE --> Es. 0800 -- 1000
