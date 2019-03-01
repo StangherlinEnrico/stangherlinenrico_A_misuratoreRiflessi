@@ -8,7 +8,7 @@ int esecuzione = 0;
 int pinButtonPrec = 9;
 int pinButtonOk = 10;
 int pinButtonNext = 11;
-int randomTime = 0;
+int randomTime = random(3000, 6000);
 
 // VARIABILI LED
 int pinRed = 8; // Pin rosso
@@ -152,24 +152,24 @@ void modificaTmpRandom()
       while(digitalRead(pinButtonPrec) == HIGH or digitalRead(pinButtonOk) == HIGH or digitalRead(pinButtonNext) == HIGH){}
     }
   }
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print(nMin);
-  lcd.setCursor(0, 1);
-  lcd.print(nMax);
-  delay(3000);
-  
-  randomTime = random(nMin, nMax);
 }
 
 bool verificaCodice()
 {
+  // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA E PROVARE A FAR LAMPEGGIARE IL NUMERO
+  // CODICE *1234*
+  // DOPO AVER INSERITO 4 CIFRE CHIUDE DA SOLO
+  // PREMERE 3 VOLTE DI FILA pinButtonOk PER USCIRE SENZA FARE NIENTE
+  // PROVARE A METTERE CODICE BASE --> 0000
   return true;
 }
 
 void modificaCriteriPromozione()
 {
-  
+  // FARE IN MODO DA FAR INSERIRE UNA CIFRA ALLA VOLTA E PROVARE A FAR LAMPEGGIARE IL NUMERO
+  // DARE AL MASSIMO 4 CIFRE PER I MILLISECONDI
+  // SE SI VUOLE FARE MILLISEC MA CON MENO DI 4 CIFRE METTERE 0 DAVANTI A TUTTO
+  // PROVARE A METTERE DEI NUMERI BASE --> Es. 0800 -- 1000
 }
 
 void setup() {
