@@ -25,7 +25,7 @@ int promozioneLed = 800; // Tempo base per la promozione Led
 // END
 
 // VARIABILI CICALINO
-int pinCicalino = 12; // Pin del cicalino
+int pinCicalino = 11; // Pin del cicalino
 int attesaCic = 0; // Variabile per salvare il tempo che la persona ha impiegato per premere il pulsante
 int promozioneCic = 1100; // Tempo base per la promozione Cic
 // END
@@ -72,7 +72,46 @@ int sceltaFunzione()
 
 void startProgram()
 {
-  
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("TL:");
+  lcd.setCursor(0, 1);
+  lcd.print("TC:");
+  delay(randomTime);
+  digitalWrite(pinBlue, HIGH);
+  while(digitalRead(okClick) == LOW)
+  {
+    attesaLed++;
+    delay(1);
+    lcd.setCursor(4, 0);
+    lcd.print(attesaLed);
+  }
+  while(digitalRead(okClick) == HIGH);
+  digitalWrite(pinBlue, LOW);
+  delay(randomTime);
+  while(digitalRead(okClick) == LOW)
+  {
+    attesaCic++;
+    tone(pinCicalino, NOTE_C6, 1);
+    lcd.setCursor(4, 1);
+    lcd.print(attesaCic);
+  }
+  while(digitalRead(okClick) == HIGH);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("L: "); lcd.print(attesaLed); lcd.print("|C: "); lcd.print(attesaCic);
+  lcd.setCursor(0, 1);
+  if (attesaLed < promozioneLed and attesaCic < promozioneCic)
+  {
+    lcd.print("Congratulazioni!");
+    delay(5000);
+  }
+  else
+  {
+    lcd.print("   FALLIMENTO");
+    delay(5000);
+  }
+  attesaLed = attesaCic = 0;
 }
 
 void modificaTmpRandom()
@@ -99,6 +138,7 @@ void setup()
   pinMode(pinGreen, OUTPUT);
   pinMode(pinBlue, OUTPUT);
   pinMode(okClick, INPUT);
+  digitalWrite(okClick, HIGH);
   lcd.setCursor(0, 0);
   lcd.print("<    SELECT    >");
   lcd.setCursor(0, 1);
