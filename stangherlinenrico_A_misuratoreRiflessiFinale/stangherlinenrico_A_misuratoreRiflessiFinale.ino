@@ -261,12 +261,136 @@ bool verificaCodice()
 
 void modificaCriteriPromozione()
 {
-  
+  int num = 0; String blu = ""; String cic = "";
+  bool ciclo = true;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ledTimePromotion");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print("0800");
+
+  for (int i = 6; i < 10; i++)
+  {
+    if (i == 7)
+      num = 8;
+    else
+      num = 0;
+    while(ciclo)
+    {
+      while(digitalRead(okClick) == HIGH and analogRead(varY) >= 256 and analogRead(varY) <= 768){}
+      if (analogRead(varY) < 256 and digitalRead(okClick) == HIGH)
+      {
+        if (num == 0)
+          num = 9;
+        else
+          num--;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (analogRead(varY) > 768 and digitalRead(okClick) == HIGH)
+      {
+        if (num == 9)
+          num = 0;
+        else
+          num++;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (digitalRead(okClick) == LOW)
+      {
+        if (i == 6)
+          blu = num;
+        else
+          blu += num;
+        ciclo = false;
+      }
+      while(digitalRead(okClick) == LOW or analogRead(varY) <= 256 or analogRead(varY) >= 768){}
+    }
+    ciclo = true;
+  }
+  if (blu == "0000")
+  {
+    lcd.clear();
+    lcd.setCursor(4, 0);
+    lcd.print("ERROR!");
+    lcd.setCursor(0, 1);
+    lcd.print(" ledProm <= 800");
+    delay(1200);
+  }
+  for (int i = 0; i < 4; i++)
+    if (blu[0] == "0")
+      blu.remove(0, 1);
+
+  num = 0;
+  ciclo = true;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ledCicaPromotion");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print("1100");
+
+  for (int i = 6; i < 10; i++)
+  {
+    if (i == 6 or i == 7)
+      num = 1;
+    else
+      num = 0;
+    while(ciclo)
+    {
+      while(digitalRead(okClick) == HIGH and analogRead(varY) >= 256 and analogRead(varY) <= 768){}
+      if (analogRead(varY) < 256 and digitalRead(okClick) == HIGH)
+      {
+        if (num == 0)
+          num = 9;
+        else
+          num--;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (analogRead(varY) > 768 and digitalRead(okClick) == HIGH)
+      {
+        if (num == 9)
+          num = 0;
+        else
+          num++;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (digitalRead(okClick) == LOW)
+      {
+        if (i == 6)
+          cic = num;
+        else
+          cic += num;
+        ciclo = false;
+      }
+      while(digitalRead(okClick) == LOW or analogRead(varY) <= 256 or analogRead(varY) >= 768){}
+    }
+    ciclo = true;
+  }
+  if (cic == "0000")
+  {
+    lcd.clear();
+    lcd.setCursor(4, 0);
+    lcd.print("ERROR!");
+    lcd.setCursor(0, 1);
+    lcd.print(" cicProm < 1100");
+    delay(1200);
+  }
+  for (int i = 0; i < 4; i++)
+    if (cic[0] == "0")
+      cic.remove(0, 1);
+
+  promozioneLed = atol(blu.c_str());
+  promozioneCic = atol(cic.c_str());
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("  Data changed");
+  delay(2500);
 }
 
 void setup()
 {
-  Serial.begin(9600);
   lcd.begin(16, 2); // Inizializzo il display LCD
   // ASSEGNO GLI INPUT E GLI OUTPUT
   pinMode(pinRed, OUTPUT);
@@ -280,14 +404,6 @@ void setup()
   lcd.print("<    SELECT    >");
   lcd.setCursor(0, 1);
   lcd.print(opzioni[0]);
-  /*while(true)
-  {
-    Serial.print("X --> "); Serial.println(analogRead(varX));
-    Serial.print("Y --> "); Serial.println(analogRead(varY));
-    Serial.print("Click --> "); Serial.println(digitalRead(okClick));
-    Serial.println();
-    delay(3000);
-  }*/
   esecuzione = sceltaFunzione();
 }
 void loop()
