@@ -203,7 +203,60 @@ void modificaTmpRandom()
 
 bool verificaCodice()
 {
-  
+  int num = 0; String codice = "";
+  bool ciclo = true;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("SECRET CODE-1234");
+  lcd.setCursor(0, 1);
+  lcd.print("      "); lcd.print("0000");
+
+  for (int i = 6; i < 10; i++)
+  {
+    num = 0;
+    while(ciclo)
+    {
+      while(digitalRead(okClick) == HIGH and analogRead(varY) >= 256 and analogRead(varY) <= 768){}
+      if (analogRead(varY) < 256 and digitalRead(okClick) == HIGH)
+      {
+        if (num == 0)
+          num = 9;
+        else
+          num--;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (analogRead(varY) > 768 and digitalRead(okClick) == HIGH)
+      {
+        if (num == 9)
+          num = 0;
+        else
+          num++;
+        lcd.setCursor(i, 1);
+        lcd.print(num);
+      }
+      else if (digitalRead(okClick) == LOW)
+      {
+        if (i == 6)
+          codice = num;
+        else
+          codice += num;
+        ciclo = false;
+      }
+      while(digitalRead(okClick) == LOW or analogRead(varY) <= 256 or analogRead(varY) >= 768){}
+    }
+    ciclo = true;
+  }
+  if (codice == "1234")
+    return true;
+  else
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(" CODICE ERRATO!");
+    delay(2500);
+    return false;
+  }
 }
 
 void modificaCriteriPromozione()
