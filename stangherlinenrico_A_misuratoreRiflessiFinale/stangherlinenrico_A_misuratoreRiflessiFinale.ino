@@ -40,8 +40,8 @@ int sceltaFunzione()
   bool Ciclo = true;
   while(Ciclo)
   {
-    while(digitalRead(okClick) == LOW and analogRead(varX) > 256 and analogRead(varX) < 768){}
-    if (analogRead(varX) < 256)
+    while(digitalRead(okClick) == HIGH and analogRead(varX) >= 256 and analogRead(varX) <= 768){}
+    if (analogRead(varX) < 256 and digitalRead(okClick) == HIGH)
     {
       if (Pos == 0)
         Pos = 2;
@@ -52,7 +52,7 @@ int sceltaFunzione()
       lcd.setCursor(0, 1);
       lcd.print(opzioni[Pos]);
     }
-    else if (analogRead(varX) > 768)
+    else if (analogRead(varX) > 768 and digitalRead(okClick) == HIGH)
     {
       if (Pos == 2)
         Pos = 0;
@@ -63,9 +63,9 @@ int sceltaFunzione()
       lcd.setCursor(0, 1);
       lcd.print(opzioni[Pos]);
     }
-    else if (digitalRead(okClick) == HIGH)
+    else if (digitalRead(okClick) == LOW and analogRead(varX) > 256 and analogRead(varX) < 768)
       Ciclo = false;
-    while(digitalRead(okClick) == HIGH or analogRead(varX) < 256 or analogRead(varX) > 768){}
+    while(digitalRead(okClick) == LOW or analogRead(varX) <= 256 or analogRead(varX) >= 768){}
   }
   return Pos;
 }
@@ -79,24 +79,24 @@ void startProgram()
   lcd.print("TC:");
   delay(randomTime);
   digitalWrite(pinBlue, HIGH);
-  while(digitalRead(okClick) == LOW)
+  while(digitalRead(okClick) == HIGH)
   {
     attesaLed++;
     delay(1);
     lcd.setCursor(4, 0);
     lcd.print(attesaLed);
   }
-  while(digitalRead(okClick) == HIGH);
+  while(digitalRead(okClick) == LOW);
   digitalWrite(pinBlue, LOW);
   delay(randomTime);
-  while(digitalRead(okClick) == LOW)
+  while(digitalRead(okClick) == HIGH)
   {
     attesaCic++;
     tone(pinCicalino, NOTE_C6, 1);
     lcd.setCursor(4, 1);
     lcd.print(attesaCic);
   }
-  while(digitalRead(okClick) == HIGH);
+  while(digitalRead(okClick) == LOW);
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("L: "); lcd.print(attesaLed); lcd.print("|C: "); lcd.print(attesaCic);
@@ -104,13 +104,12 @@ void startProgram()
   if (attesaLed < promozioneLed and attesaCic < promozioneCic)
   {
     lcd.print("Congratulazioni!");
-    delay(5000);
   }
   else
   {
     lcd.print("   FALLIMENTO");
-    delay(5000);
   }
+  delay(2500);
   attesaLed = attesaCic = 0;
 }
 
@@ -138,11 +137,21 @@ void setup()
   pinMode(pinGreen, OUTPUT);
   pinMode(pinBlue, OUTPUT);
   pinMode(okClick, INPUT);
+  pinMode(varX, INPUT);
+  pinMode(varY, INPUT);
   digitalWrite(okClick, HIGH);
   lcd.setCursor(0, 0);
   lcd.print("<    SELECT    >");
   lcd.setCursor(0, 1);
   lcd.print(opzioni[0]);
+  /*while(true)
+  {
+    Serial.print("X --> "); Serial.println(analogRead(varX));
+    Serial.print("Y --> "); Serial.println(analogRead(varY));
+    Serial.print("Click --> "); Serial.println(digitalRead(okClick));
+    Serial.println();
+    delay(3000);
+  }*/
   esecuzione = sceltaFunzione();
 }
 void loop()
@@ -157,6 +166,5 @@ void loop()
     if (codice)
       modificaCriteriPromozione();
   }
-  while(digitalRead(okClick) == HIGH){}
   setup();
 }
