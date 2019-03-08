@@ -391,7 +391,15 @@ void modificaCriteriPromozione()
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("  Data changed");
-  delay(2500);
+  for (int i = 0; i < 3; i++)
+  {
+    digitalWrite(pinRed, HIGH);
+    digitalWrite(pinBlue, HIGH);
+    delay(300);
+    digitalWrite(pinRed, LOW);
+    digitalWrite(pinBlue, LOW);
+    delay(300);
+  }
 }
 
 void setup()
