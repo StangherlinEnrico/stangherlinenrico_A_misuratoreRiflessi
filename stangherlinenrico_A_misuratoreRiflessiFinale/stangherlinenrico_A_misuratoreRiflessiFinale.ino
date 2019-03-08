@@ -13,7 +13,7 @@ int randomTime = random(3000, 6000); // Genera numero random base
 // VARIABILI JOYSTICK
 int varX = 0;
 int varY = 1;
-int okClick = 12;
+const int okClick = 12;
 // END
 
 // VARIABILI LED
@@ -103,13 +103,18 @@ void startProgram()
   lcd.setCursor(0, 1);
   if (attesaLed < promozioneLed and attesaCic < promozioneCic)
   {
+    digitalWrite(pinGreen, HIGH);
     lcd.print("Congratulazioni!");
+    delay(2500);
+    digitalWrite(pinGreen, LOW);
   }
   else
   {
+    digitalWrite(pinRed, HIGH);
     lcd.print("   FALLIMENTO");
+    delay(2500);
+    digitalWrite(pinRed, LOW);
   }
-  delay(2500);
   attesaLed = attesaCic = 0;
 }
 
