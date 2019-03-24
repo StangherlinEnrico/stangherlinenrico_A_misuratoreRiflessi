@@ -1,19 +1,16 @@
 #include "pitches.h" // Libreria per il suono del cicalino
 #include <LiquidCrystal.h> // Libreria per utilizzare il Display LCD
 
-// INSERIRE LED RGB AL POSTO DEL LED NORMALE E FARE IN MODO CHE SI ACCENDA IL LED VERDE SE SI è PROMOSSI E QUELLO ROSSO PER IL VICEVERSA
-// INSERIRE IL JOYSTICK E CONTROLLARE IL CLICK E LA DIREZIONE X
-
-String opzioni[4] { "  Run Program", "   randomTime", "Promotion times", "                " };
-int tmpRandom[4] { 3000, 4000, 5000, 6000 };
-int esecuzione = 0;
+String opzioni[4] { "  Run Program", "   randomTime", "Promotion times", "                " }; // ARRAY UTILIZZATO PER STAMPARE IL MENU
+int tmpRandom[4] { 3000, 4000, 5000, 6000 }; // ARRAY USATO PER STAMPARE I TEMPI RANDOM
+int esecuzione = 0; // INT USATO PER SELEZIONARE L'AZIONE DAL MENU
 
 int randomTime = random(3000, 6000); // Genera numero random base
 
 // VARIABILI JOYSTICK
-int varX = 0;
-int varY = 1;
-const int okClick = 12;
+int varX = 0; // Controllo della x
+int varY = 1; // Controllo della y
+const int okClick = 12; // pin per il click del joystick
 // END
 
 // VARIABILI LED
@@ -34,100 +31,100 @@ int promozioneCic = 1100; // Tempo base per la promozione Cic
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7); // Dico al programma dove sono situati i pin del display
 // END
 
-int sceltaFunzione()
+int sceltaFunzione() // Funzione che verifica quale programma si vuole far partire
 {
-  int Pos = 0;
-  bool Ciclo = true;
-  while(Ciclo)
+  int Pos = 0; // Int usato per definire la posizione dell'array del menù
+  bool Ciclo = true; // Bool per la scelta dal menù
+  while(Ciclo) // Ciclo di scelta
   {
-    while(digitalRead(okClick) == HIGH and analogRead(varX) >= 256 and analogRead(varX) <= 768){}
-    if (analogRead(varX) < 256 and digitalRead(okClick) == HIGH)
+    while(digitalRead(okClick) == HIGH and analogRead(varX) >= 256 and analogRead(varX) <= 768){} // Bottone non premuto e joystick fermo
+    if (analogRead(varX) < 256 and digitalRead(okClick) == HIGH) // Se il bottone non è premuto e il joystick va a sinistra
     {
       if (Pos == 0)
-        Pos = 2;
+        Pos = 2; // Modifica la pos dell'array
       else
-        Pos--;
-      lcd.setCursor(0, 1);
-      lcd.print(opzioni[3]);
-      lcd.setCursor(0, 1);
-      lcd.print(opzioni[Pos]);
+        Pos--; // Modifica la pos dell'array
+      lcd.setCursor(0, 1); // Setta il cursore per la stampa
+      lcd.print(opzioni[3]); // Stampa il vuoto
+      lcd.setCursor(0, 1); // Setta il cursore
+      lcd.print(opzioni[Pos]); // Stampa opzioni in posizione pos
     }
-    else if (analogRead(varX) > 768 and digitalRead(okClick) == HIGH)
+    else if (analogRead(varX) > 768 and digitalRead(okClick) == HIGH) // Se il bottone non è premuto e il joystick va a destra
     {
       if (Pos == 2)
-        Pos = 0;
+        Pos = 0; // Modifica la pos dell'array
       else
-        Pos++;
-      lcd.setCursor(0, 1);
-      lcd.print(opzioni[3]);
-      lcd.setCursor(0, 1);
-      lcd.print(opzioni[Pos]);
+        Pos++; // Modifica la pos dell'array
+      lcd.setCursor(0, 1); // Setta il cursore per la stampa
+      lcd.print(opzioni[3]); // Stampa il vuoto
+      lcd.setCursor(0, 1); // Setta il cursore per la stampa
+      lcd.print(opzioni[Pos]); // Stampa opzioni in posizione pos
     }
-    else if (digitalRead(okClick) == LOW and analogRead(varX) > 256 and analogRead(varX) < 768)
-      Ciclo = false;
-    while(digitalRead(okClick) == LOW or analogRead(varX) <= 256 or analogRead(varX) >= 768){}
+    else if (digitalRead(okClick) == LOW and analogRead(varX) > 256 and analogRead(varX) < 768) // Se il joystick è al centro e il pulsante premuto
+      Ciclo = false; // Cambia il bool Ciclo per buttarmi fuori dal ciclo
+    while(digitalRead(okClick) == LOW or analogRead(varX) <= 256 or analogRead(varX) >= 768){} // Attende mentre il joystick è premuto o spostato dal centro
   }
-  return Pos;
+  return Pos; // Ritorna posizione
 }
 
-void startProgram()
+void startProgram() // Funzione per lo start del programma
 {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("TL:");
-  lcd.setCursor(0, 1);
-  lcd.print("TC:");
-  delay(randomTime);
-  digitalWrite(pinBlue, HIGH);
-  while(digitalRead(okClick) == HIGH)
+  lcd.clear(); // Svuota il display
+  lcd.setCursor(0, 0); // Setta il cursore
+  lcd.print("TL:"); // Stampa
+  lcd.setCursor(0, 1); // Setta il cursore
+  lcd.print("TC:"); // Stampa
+  delay(randomTime); // Aspetta un tempo random
+  digitalWrite(pinBlue, HIGH); // Accende il led
+  while(digitalRead(okClick) == HIGH) // Finché il pulsante non è premuto
   {
-    attesaLed++;
-    delay(1);
-    lcd.setCursor(4, 0);
-    lcd.print(attesaLed);
+    attesaLed++; // Incrementa attesaLed
+    delay(1); // Aspetta 1 millisec
+    lcd.setCursor(4, 0); // Setta il cursore
+    lcd.print(attesaLed); // Stampa
   }
-  while(digitalRead(okClick) == LOW);
-  digitalWrite(pinBlue, LOW);
-  delay(randomTime);
-  while(digitalRead(okClick) == HIGH)
+  while(digitalRead(okClick) == LOW); // Aspetta mentre il pulsate è premuto
+  digitalWrite(pinBlue, LOW); // Spegne il led
+  delay(randomTime); // Aspetta un tempo random
+  while(digitalRead(okClick) == HIGH) // Finché il pulsante non è premuto
   {
-    attesaCic++;
-    tone(pinCicalino, NOTE_C6, 1);
-    lcd.setCursor(4, 1);
-    lcd.print(attesaCic);
+    attesaCic++; // Incrementa attesaCic
+    tone(pinCicalino, NOTE_C6, 1); // Fa passare un millisecondo emettendo un suono
+    lcd.setCursor(4, 1); // Setta il cursore
+    lcd.print(attesaCic); // Stampa
   }
-  while(digitalRead(okClick) == LOW);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("L: "); lcd.print(attesaLed); lcd.print("|C: "); lcd.print(attesaCic);
-  lcd.setCursor(0, 1);
-  if (attesaLed < promozioneLed and attesaCic < promozioneCic)
+  while(digitalRead(okClick) == LOW); // Aspetta mentre il pulsate è premuto
+  lcd.clear(); // Svuota il display
+  lcd.setCursor(0, 0); // Setta il cursore
+  lcd.print("L: "); lcd.print(attesaLed); lcd.print("|C: "); lcd.print(attesaCic); // Stampa
+  lcd.setCursor(0, 1); // Setta il cursore
+  if (attesaLed < promozioneLed and attesaCic < promozioneCic) // Se è promosso
   {
-    digitalWrite(pinGreen, HIGH);
-    lcd.print("Congratulazioni!");
-    delay(2500);
-    digitalWrite(pinGreen, LOW);
+    digitalWrite(pinGreen, HIGH); // Accendi il led verde
+    lcd.print("Congratulazioni!"); // Stampa
+    delay(2500); // Aspetta due secondi e mezzo
+    digitalWrite(pinGreen, LOW); // Spegni il led verde
   }
-  else
+  else // Altrimenti
   {
-    digitalWrite(pinRed, HIGH);
-    lcd.print("   FALLIMENTO");
-    delay(2500);
-    digitalWrite(pinRed, LOW);
+    digitalWrite(pinRed, HIGH); // Accendi il led rosso
+    lcd.print("   FALLIMENTO"); // Stampa
+    delay(2500); // Aspetta due secondi e mezzo
+    digitalWrite(pinRed, LOW); // Spegni il led rosso
   }
-  attesaLed = attesaCic = 0;
+  attesaLed = attesaCic = 0; // Azzera i tempi di attesa
 }
 
-void modificaTmpRandom()
+void modificaTmpRandom() // Funzione per la modifica dei tempi random
 {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("< TEMPO MINIMO >");
-  lcd.setCursor(0, 1);
-  lcd.print("      "); lcd.print(tmpRandom[0]);
-  int nMin = 0; int nMax = 0; int Pos = 0; int Pos2 = 0;
-  bool valenzaNumeri = true;
-  while(valenzaNumeri)
+  lcd.clear(); // Svuota il display
+  lcd.setCursor(0, 0); // Setta il cursore
+  lcd.print("< TEMPO MINIMO >"); // Stampa
+  lcd.setCursor(0, 1); // Setta il cursore
+  lcd.print("      "); lcd.print(tmpRandom[0]); // Stampa
+  int nMin = 0; int nMax = 0; int Pos = 0; int Pos2 = 0; // Variabili per l'appoggio
+  bool valenzaNumeri = true; // Bool per il ciclo
+  while(valenzaNumeri) // Ciclo per la scelta del minore -- STESSO METODO USATO PER LA SCELTA DELL'AZIONE
   {
     while(digitalRead(okClick) == HIGH and analogRead(varX) >= 256 and analogRead(varX) <= 768){}
     if (analogRead(varX) < 256 and digitalRead(okClick) == HIGH)
@@ -159,10 +156,10 @@ void modificaTmpRandom()
     }
     while(digitalRead(okClick) == LOW or analogRead(varX) <= 256 or analogRead(varX) >= 768){}
   }
-  valenzaNumeri = true;
-  if (Pos == 2)
-    nMax = tmpRandom[3];
-  else
+  valenzaNumeri = true; // Cambia la bool in true
+  if (Pos == 2) // Se la posizione è uguale a 2
+    nMax = tmpRandom[3]; // il massimo tempo random è tmpRandom[3]
+  else Altrimenti -- STESSO METODO USATO PER LA SCELTA DEL NUMERO MINORE DEL RANDOM
   {
     Pos2 = (Pos + 1);
     lcd.clear();
@@ -203,23 +200,23 @@ void modificaTmpRandom()
       while(digitalRead(okClick) == LOW or analogRead(varX) <= 256 or analogRead(varX) >= 768){}
     }
   }
-  randomTime = random(nMin, nMax);
+  randomTime = random(nMin, nMax); // Genera il numero random
 }
 
-bool verificaCodice()
+bool verificaCodice() // Funzione per la verifica del codice segreto per la modifica dei criteri di promozione
 {
-  int num = 0; String codice = "";
-  bool ciclo = true;
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("SECRET CODE-1234");
-  lcd.setCursor(0, 1);
-  lcd.print("      "); lcd.print("0000");
+  int num = 0; String codice = ""; // Veriabili
+  bool ciclo = true; // Bool
+  lcd.clear(); // Svuota display
+  lcd.setCursor(0, 0); // Setta il cursore
+  lcd.print("SECRET CODE-1234"); // Stampa
+  lcd.setCursor(0, 1); // Setta il cursore
+  lcd.print("      "); lcd.print("0000"); // Stampa
 
-  for (int i = 6; i < 10; i++)
+  for (int i = 6; i < 10; i++) // Ciclo for per la selezione della colonna del display
   {
-    num = 0;
-    while(ciclo)
+    num = 0; // Azzera numero
+    while(ciclo) // While per la selezione del numero specifico -- METODO SIMILE A QUELLO USATO PER IL RANDOM E LA SCELTA DELL'AZIONE
     {
       while(digitalRead(okClick) == HIGH and analogRead(varY) >= 256 and analogRead(varY) <= 768){}
       if (analogRead(varY) < 256 and digitalRead(okClick) == HIGH)
@@ -250,21 +247,21 @@ bool verificaCodice()
       }
       while(digitalRead(okClick) == LOW or analogRead(varY) <= 256 or analogRead(varY) >= 768){}
     }
-    ciclo = true;
+    ciclo = true; // Rimette il ciclo a true
   }
-  if (codice == "1234")
-    return true;
-  else
+  if (codice == "1234") // Se il codice è 1234
+    return true; // Ritorna vero
+  else // Atrimenti
   {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print(" CODICE ERRATO!");
-    delay(2500);
-    return false;
+    lcd.clear(); // Svuota il display
+    lcd.setCursor(0, 0); // Setta il cursore
+    lcd.print(" CODICE ERRATO!"); // Stampa
+    delay(2500); // Aspetta due secondi e mezzo
+    return false; // Ritorna falso
   }
 }
 
-void modificaCriteriPromozione()
+void modificaCriteriPromozione() // Funzione per la modifica dei criteri di promozione -- METODO SIMILE ALLA VERICA DEL CODICE SEGRETO
 {
   int num = 0; String blu = ""; String cic = "";
   bool ciclo = true;
@@ -413,23 +410,23 @@ void setup()
   pinMode(varX, INPUT);
   pinMode(varY, INPUT);
   digitalWrite(okClick, HIGH);
-  lcd.setCursor(0, 0);
-  lcd.print("<    SELECT    >");
-  lcd.setCursor(0, 1);
-  lcd.print(opzioni[0]);
-  esecuzione = sceltaFunzione();
+  lcd.setCursor(0, 0); // Setta il cursore
+  lcd.print("<    SELECT    >"); // Stampa
+  lcd.setCursor(0, 1); // Setta il cursore
+  lcd.print(opzioni[0]); // Stampa
+  esecuzione = sceltaFunzione(); // Richiama la funzione sceltaFunzione e assegna il return a esecuzione
 }
 void loop()
 {
-  if (esecuzione == 0)
-    startProgram();
-  else if (esecuzione == 1)
-    modificaTmpRandom();
-  else
+  if (esecuzione == 0) // Se esecuzione è uguale a 0
+    startProgram(); // Avvia il programma
+  else if (esecuzione == 1) // Se esecuzione è uguale a 1
+    modificaTmpRandom(); // Modifica i tempi random per l'accensione
+  else // Altrimenti
   {
-    bool codice = verificaCodice();
-    if (codice)
-      modificaCriteriPromozione();
+    bool codice = verificaCodice(); // Verifica la veriticità del codice e assegna il return a codice
+    if (codice) // Se codice è uguale a vero
+      modificaCriteriPromozione(); // Fai modificare i criteri di promozione richiamando la funzione modificaCriteriPromozione
   }
-  setup();
+  setup(); // Fai ricominciare il programma
 }
