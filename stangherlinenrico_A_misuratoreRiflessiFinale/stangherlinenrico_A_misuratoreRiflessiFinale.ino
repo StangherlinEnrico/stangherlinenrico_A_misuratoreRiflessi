@@ -159,7 +159,7 @@ void modificaTmpRandom() // Funzione per la modifica dei tempi random
   valenzaNumeri = true; // Cambia la bool in true
   if (Pos == 2) // Se la posizione è uguale a 2
     nMax = tmpRandom[3]; // il massimo tempo random è tmpRandom[3]
-  else Altrimenti -- STESSO METODO USATO PER LA SCELTA DEL NUMERO MINORE DEL RANDOM
+  else // Altrimenti -- STESSO METODO USATO PER LA SCELTA DEL NUMERO MINORE DEL RANDOM
   {
     Pos2 = (Pos + 1);
     lcd.clear();
